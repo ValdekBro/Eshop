@@ -1,0 +1,41 @@
+@layout('main')
+
+    @section('sidebar')
+    <h2> Sign-up </h2>
+    @endsection
+
+    @section('content')
+    <form action="/signup" method="post">
+        {{ csrfField() }}
+        <input type="hidden" name="type" value="legal_entity">
+
+        <label for="company_name"> Company name</label>         <input type="text" name="company_name" id="company_name"> <br>
+        <label for="legal_company_name"> Surname</label>        <input type="text" name="legal_company_name" id="legal_company_name"> <br>
+        <label for="mfi"> Middle name</label>                   <input type="text" name="mfi" id="mfi"> <br>
+        <label for="edrpou"> Phone number</label>               <input type="text" name="edrpou" id="edrpou"> <br>
+        <label for="payment_account"> Payment account</label>   <input type="text" name="payment_account" id="payment_account"> <br>
+        <label for="mail_address">Mail address</label>          <input type="text" name="mail_address" id="mail_address"> <br>
+        <br>
+        <label for="region"> Region</label>                <input type="text" name="region" id="region"> <br>
+        <label for="service"> Service</label>              <input type="text" name="service" id="service"> <br>
+        <label for="post_office"> Post office</label>      <input type="text" name="post_office" id="post_office"> <br>
+        <label for="large_order_post_office"> Large order post office</label>   <input type="text" name="large_order_post_office" id="large_order_post_office"> <br>
+        <label for="delivery_by_address"> Address</label>  <input type="text" name="delivery_by_address" id="delivery_by_address"> <br>
+        
+        <h3>Company representative</h3>
+        <label for="rname"> Name</label>                 <input type="text" name="rname" id="rname"> <br>
+        <label for="rsurname"> Surname</label>           <input type="text" name="rsurname" id="rsurname"> <br>
+        <label for="rmiddle_name"> Middle name</label>   <input type="text" name="rmiddle_name" id="rmiddle_name"> <br>
+        <label for="rphone_number"> Phone number</label> <input type="text" name="rphone_number" id="rphone_number"> <br>
+        <label for="raddress"> Address</label>           <input type="text" name="raddress" id="raddress"> <br>
+        
+        <h3>Contact person</h3>
+        <label for="pname"> Name</label>                 <input type="text" name="pname" id="pname"> <br>
+        <label for="psurname"> Surname</label>           <input type="text" name="psurname" id="psurname"> <br>
+        <label for="pmiddle_name"> Middle name</label>   <input type="text" name="pmiddle_name" id="pmiddle_name"> <br>
+        <label for="pphone_number"> Phone number</label> <input type="text" name="pphone_number" id="pphone_number"> <br>
+        <label for="paddress"> Address</label>           <input type="text" name="paddress" id="paddress"> <br>
+
+        <button type="submit">Send</button>
+    </form>
+    @endsection  

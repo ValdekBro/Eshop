@@ -4,16 +4,16 @@
 const Model = use('Model')
 
 class PersonInfo extends Model {
-    orders () {
+    order () {
         return this.hasOne('App/Models/Order')
     }
-    users () {
-        return this.hasOne('App/Models/User')
+    user () {
+        return this.hasOne('App/Models/User', 'id', 'person_info_id')
     }
-    companyRepresentatives () {
+    companyRepresentative () {
         return this.hasOne('App/Models/LegalEntityInfo', 'id', 'company_representative_id')
     }
-    contactPersons () {
+    contactPerson () {
         return this.hasOne('App/Models/LegalEntityInfo', 'id', 'сontact person_id')
     }
 }

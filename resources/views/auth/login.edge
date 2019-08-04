@@ -1,0 +1,14 @@
+@layout('main')
+
+    @section('sidebar')
+    <h2> Login </h2>
+    @endsection
+
+    @section('content')
+    <form action="/login" method="post">
+        {{ csrfField() }}
+        <input type="email" name="email" id="email">
+        <input type="password" name="password" id="password">
+        <button type="submit">Send</button>
+    </form>
+    @endsection  

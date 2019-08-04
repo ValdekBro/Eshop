@@ -9,7 +9,7 @@ class DeliveryDetail extends Model {
     }
 
     user () {
-        return this.hasOne('App/Models/User')
+        return this.hasOne('App/Models/User', 'id', 'delivery_details_id')
     }
 }
 

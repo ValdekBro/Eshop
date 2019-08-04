@@ -38,7 +38,7 @@ class User extends Model {
         return this
             .belongsToMany('App/Models/Product')
             .pivotModel('App/Models/UserProduct')
-    }
+        }
 	userNews () {
         return this.hasMany('App/Models/UserNew')
 	}
@@ -50,7 +50,7 @@ class User extends Model {
 	}
 	deliveryDetail () {
         return this.belongsTo('App/Models/DeliveryDetail', 'delivery_details_id')
-    }
+        }
 }
 
 module.exports = User
