@@ -38,8 +38,8 @@ Route.post  ('/account/edit', 'UserController.update');
 Route.get   ('/account/orders', 'OrderController.index'); 	//render('order.list');
 
 Route.get   ('/order/create', 'OrderController.edit'); 		// render('order.form');
-Route.get   ('/order/:id', 'OrderController.show'); 		//render('order.card');
-Route.get   ('/order/:id/copy', 'OrderController.edit'); 	// TODO : Добавить возможность редактировать продукты в заказе
+Route.get   ('/order/:id', 'OrderController.show'); 		// render('order.card');
+Route.get   ('/order/:id/copy', 'OrderController.copy'); 	// TODO : Добавить возможность редактировать продукты в заказе
 Route.post  ('/order/create', 'OrderController.store');
 
 
@@ -64,7 +64,7 @@ Route.group(() => {
 	Route.get   ('/product/:id', 'ProductController.show'); 		//render('admin.product.card')
 	Route.get   ('/product/create', 'ProductController.create'); 	//render('admin.product.form')
 	Route.post  ('/product/create', 'ProductController.store');
-	Route.get   ('/product/:id/copy', 'ProductController.edit');
+	Route.get   ('/product/:id/copy', 'ProductController.copy');
 	Route.get   ('/product/:id/edit', 'ProductController.edit');
 	Route.post  ('/product/:id/edit', 'ProductController.update');
 	Route.post  ('/product/:id/delete', 'ProductController.destroy');	//ajax
@@ -113,7 +113,7 @@ Route.group(() => {
 	// Route.post  ('/new_news/:id/delete', 'NewNewsController.destroy');	//ajax
 
 }).prefix('/administration')
-.middleware('AdminPermisionsCheck')
+.middleware('admin')
 .namespace('Admin')
 
 /* Simple Blog 
