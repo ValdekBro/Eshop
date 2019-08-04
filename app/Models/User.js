@@ -8,17 +8,13 @@ const Model = use('Model')
 
 class User extends Model {
   static boot () {
-    super.boot()
+	super.boot()
 
-    /**
-     * A hook to hash the user password before saving
-     * it to the database.
-     */
-    this.addHook('beforeSave', async (userInstance) => {
-      if (userInstance.dirty.password) {
-        userInstance.password = await Hash.make(userInstance.password)
-      }
-    })
+	this.addHook('beforeSave', async (userInstance) => {
+	  if (userInstance.dirty.password) {
+		userInstance.password = await Hash.make(userInstance.password)
+	  }
+	})
   }
 
   /**
@@ -31,9 +27,30 @@ class User extends Model {
    *
    * @return {Object}
    */
-  tokens () {
-    return this.hasMany('App/Models/Token')
-  }
+	tokens () {	
+		return this.hasMany('App/Models/Token')
+	}
+
+	orders () {
+		return this.hasMany('App/Models/Order')
+	}
+	products () {
+        return this
+            .belongsToMany('App/Models/Product')
+            .pivotModel('App/Models/UserProduct')
+    }
+	userNews () {
+        return this.hasMany('App/Models/UserNew')
+	}
+	personInfo () {
+        return this.belongsTo('App/Models/PersonInfo', 'person_info_id')
+	}
+	legalEntityInfo () {
+        return this.belongsTo('App/Models/LegalEntityInfo', 'legal_entity_info_id')
+	}
+	deliveryDetail () {
+        return this.belongsTo('App/Models/DeliveryDetail', 'delivery_details_id')
+    }
 }
 
 module.exports = User
