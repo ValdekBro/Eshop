@@ -35,9 +35,9 @@ class User extends Model {
 		return this.hasMany('App/Models/Order')
 	}
 	products () {
-        return this
-            .belongsToMany('App/Models/Product')
-            .pivotModel('App/Models/UserProduct')
+                return this
+                .belongsToMany('App/Models/Product', 'user_id', 'product_id', 'id', 'id')
+                .pivotModel('App/Models/UserProduct')
         }
 	userNews () {
         return this.hasMany('App/Models/UserNew')

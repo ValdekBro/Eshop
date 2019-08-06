@@ -5,7 +5,8 @@ const PersonInfo = use('App/Models/PersonInfo')
 const DeliveryDetail = use('App/Models/DeliveryDetail')
 
 class UserController {
-    async store({ request, view, response }) {
+    async store({ request, auth, session, response }) {
+        
         const { type } = request.all();
         if(type == 'person') {
             const { 
@@ -21,7 +22,13 @@ class UserController {
             delivery_detail.delivery_by_address = delivery_by_address;
             await delivery_detail
                 .save()
-                // .catch( err => { return response.status(err.status).send(err.message) });
+                .catch( function(e) {
+                    session.put('error', e.toString());
+                    session.put('error_code', e.code);
+                    session.put('error_message', e.sqlMessage);
+                    session.put('error_beauti_message', "Failed to save Delivery details data");
+                    console.error(e);
+                });
                 
             let person_info = new PersonInfo;
             person_info.name = name;
@@ -31,6 +38,13 @@ class UserController {
             person_info.address = address;
             await person_info
                 .save()
+                .catch( function(e) {
+                    session.put('error', e.toString());
+                    session.put('error_code', e.code);
+                    session.put('error_message', e.sqlMessage);
+                    session.put('error_beauti_message', "Failed to save Person info data");
+                    console.error(e);
+                });
 
             let user = new User;
             user.type=type;
@@ -38,40 +52,83 @@ class UserController {
             user.password = password;
             await delivery_detail
                 .user()
-                .save(user);
+                .save(user)
+                .catch( function(e) {
+                    session.put('error', e.toString());
+                    session.put('error_code', e.code);
+                    session.put('error_message', e.sqlMessage);
+                    session.put('error_beauti_message', "Failed to save User data");
+                    console.error(e);
+                });
             await person_info
                 .user()
-                .save(user);
+                .save(user)
+                .catch( function(e) {
+                    session.put('error', e.toString());
+                    session.put('error_code', e.code);
+                    session.put('error_message', e.sqlMessage);
+                    session.put('error_beauti_message', "Failed to save User data");
+                    console.error(e);
+                });
 
+            await auth
+                .attempt(email, password)
+                .catch( function(e) {
+                    session.put('error', e.toString());
+                    session.put('error_code', e.code);
+                    session.put('error_message', e.massage);
+                    session.put('error_beauti_message', "Failed to Authenficate User");
+                    console.error(e);
+                    response.redirect('/');
+                });
 
         } else if(type == 'legal_entity') {
+
             // TODO : make legal entity store method
-        } else {
+            return response.send('Legal entity registration is not allowed yet')
 
         }
-        response.redirect('/login');
-    }
-    async show({ request, view, response }) {
-
-        return view.render('in_developing');
-    }
-    async edit({ request, view, response }) {
-
-        return view.render('in_developing');
-    }
-    async update({ request, view, response }) {
-
-        return view.render('in_developing');
-    }
-    async login({ request, auth, response }) {
-        const { email, password } = request.all();
-        try { await auth.attempt(email, password); } catch(e) { return response.send('Error' + e.message) }
+        
         return response.redirect('/home');
     }
-    async logout({ request, auth, response }) {
-        await auth.logout();
+
+    async show({ request, view, response }) {
+        return view.render('in_developing');
+    }
+
+    async edit({ request, view, response }) {
+        return view.render('in_developing');
+    }
+
+    async update({ request, view, response }) {
+        return view.render('in_developing');
+    }
+
+    async login({ request, auth, session, response }) {
+        const { email, password } = request.all();
+        await auth
+            .attempt(email, password)
+            .catch( function(e) {
+                session.put('error', e.toString());
+                session.put('error_code', e.code);
+                session.put('error_message', e.massage);
+                session.put('error_beauti_message', "Failed to Authenficate User");
+                console.error(e);
+            });
+        return response.redirect('/home');
+    }
+
+    async logout({ request, auth, session, response }) {
+        await auth
+            .logout()
+            .catch( function(e) {
+                session.put('error', e.toString());
+                session.put('error_code', e.code);
+                session.put('error_message', e.massage);
+                session.put('error_beauti_message', "Failed to Logout User");
+                console.error(e);
+            });
         return response.redirect('/');
-        // return response.send('OK');
     }
 }
 
