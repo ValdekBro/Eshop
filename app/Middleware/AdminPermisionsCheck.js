@@ -9,8 +9,11 @@ class AdminPermisionsCheck {
    * @param {Request} ctx.request
    * @param {Function} next
    */
-  async handle ({ request }, next) {
-    
+  async handle ({ request, response, auth, session }, next) {
+    if(auth.user.type == 'person' || auth.user.type == 'legal_entity') {  
+      session.put('error_beauti_message', "You are not allowed to access this resource");
+      return response.status(401).redirect('/');
+    }
     await next()
   }
 }

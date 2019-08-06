@@ -106,7 +106,7 @@ class UserController {
 
     async login({ request, auth, session, response }) {
         const { email, password } = request.all();
-        await auth
+        const success = await auth
             .attempt(email, password)
             .catch( function(e) {
                 session.put('error', e.toString());
@@ -115,7 +115,14 @@ class UserController {
                 session.put('error_beauti_message', "Failed to Authenficate User");
                 console.error(e);
             });
-        return response.redirect('/home');
+        if(success) {
+            if(auth.user.type == 'person' || auth.user.type == 'legal_entity') 
+                return response.redirect('/home');
+            else 
+                return response.redirect('/administration');
+        }
+        else 
+            return response.redirect('/');
     }
 
     async logout({ request, auth, session, response }) {
