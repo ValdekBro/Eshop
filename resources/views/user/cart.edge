@@ -41,7 +41,7 @@
                     sum += qnt*price;
                 });
 
-                $('#price').text(sum);
+                $('#price').text(sum.toFixed(2));
                 if(Number.parseInt($('#points').val()) > 300) { 
                     $('#points').attr('max', '300'); 
                     $('#points').val('300');
