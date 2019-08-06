@@ -31,8 +31,11 @@ class CartController {
                 console.error(e);
                 return response.status(404).send( session.get('error_beauti_message') + '. ' + session.get('error_message') )
             });
-            
-        return view.render('user.cart', { products : products.toJSON() });
+
+        return view.render('user.cart', { 
+            products : products.toJSON(),
+            points : user.points
+         });
     }
     async insert({ request,  auth, session, response }) {
 

@@ -30,8 +30,42 @@
                     $('i[id^="'+id+'"]').text(  ++num   );
                 } else if(action == 'remove') {
                     $('h3[id^="'+id+'"]').remove();
-                } 
+                }
+                calculate_sum();
             }
+            function calculate_sum() {
+                let sum = 0;
+                $('i').each(function( index ) {
+                    let qnt = Number.parseInt($( this ).text());
+                    let price = Number.parseFloat($(this).attr('data-price'));
+                    sum += qnt*price;
+                });
+
+                $('#price').text(sum);
+                if(Number.parseInt($('#points').val()) > 300) { 
+                    $('#points').attr('max', '300'); 
+                    $('#points').val('300');
+                }
+                const points = Number.parseInt($('#points').val());
+                // 300 - 60%
+                // 100 - 20%
+                // 10 - 2%
+                // 1 - 0.2%
+                let k = 0.002; 
+                if(sum < 500)    k = 0.0026;
+                if(sum < 1000)   k = 0.0022;
+                //0.002
+                if(sum > 10000)  k = 0.0018;
+                if(sum > 100000) k = 0.001;
+                if(sum > 500000) k = 0.0005;
+                $('#disc_price').text((sum-(sum*(points*k))).toFixed(2));
+            }
+        </script>
+    @endsection
+
+    @section('scripts')
+        <script>
+            calculate_sum();
         </script>
     @endsection
 
@@ -45,9 +79,11 @@
             <input type="button" value="X" onclick="send( {{ product.id }}, 'remove' )">
             {{ product.name }} 
             <input type="button" value="-" onclick="send( {{ product.id }}, 'reduce' )"> 
-            <i id="{{ product.id }}">{{ product.pivot.quantity }}</i>
+            <i id="{{ product.id }}" data-price="{{ product.price }}">{{ product.pivot.quantity }}</i>
             <input type="button" value="+" onclick="send( {{ product.id }}, 'increase' )"> 
         </h3>
     @endeach
-    
+    <input type="number" id="points" value="{{ points }}" max="{{ points }}" min="0" onchange="calculate_sum()">
+    <h2>Order price : <h1 id="price">0</h1></h2>
+    <h2>Order price with discount : <h1 id="disc_price">0</h1></h2>
     @endsection 
