@@ -4,7 +4,6 @@
 const Route = use('Route')
 const inflect = require( 'inflection' );
 
-Route.get   ('/home', 'NewsController.index'); 	// render('home');
 
 Route.get   ('/info', 'InfoController.index'); 	// render('info');
 
@@ -22,26 +21,29 @@ Route.on    ('/signup/phys_person').render('auth.signup.phys_person');
 Route.on    ('/signup/legal_entity').render('auth.signup.legal_entity');
 Route.post  ('/signup', 'UserController.store');
 
-Route.get   ('/cart', 'CartController.index'); 	// render('user.cart');
-Route.post  ('/cart/add', 'CartController.insert');         //ajax
-Route.post  ('/cart/remove', 'CartController.remove');      //ajax
-Route.post  ('/cart/increase', 'CartController.increase');  //ajax
-Route.post  ('/cart/reduce', 'CartController.reduce');    	//ajax
+Route.group(() => {
+	Route.get   ('/home', 'NewsController.index'); 	// render('home');
 
-Route.get   ('/catalog', 'CategoryController.index'); 				//render('product.catalog');
-Route.get   ('/catalog/:category', 'ProductController.index'); 		//render('product.list');
-Route.get   ('/catalog/:category/:id', 'ProductController.show'); 	//render('product.card');
+	Route.get   ('/cart', 'CartController.index'); 	// render('user.cart');
+	Route.post  ('/cart/add', 'CartController.insert');         //ajax
+	Route.post  ('/cart/remove', 'CartController.remove');      //ajax
+	Route.post  ('/cart/increase', 'CartController.increase');  //ajax
+	Route.post  ('/cart/reduce', 'CartController.reduce');    	//ajax
 
-Route.get   ('/account', 'UserController.show'); 			//render('user.card');
-Route.get   ('/account/edit', 'UserController.edit'); 		//render('user.form');
-Route.post  ('/account/edit', 'UserController.update');
-Route.get   ('/account/orders', 'OrderController.index'); 	//render('order.list');
+	Route.get   ('/catalog', 'CategoryController.index'); 				//render('product.catalog');
+	Route.get   ('/catalog/:category', 'ProductController.index'); 		//render('product.list');
+	Route.get   ('/catalog/:category/:id', 'ProductController.show'); 	//render('product.card');
 
-Route.get   ('/order/create', 'OrderController.edit'); 		// render('order.form');
-Route.get   ('/order/:id', 'OrderController.show'); 		// render('order.card');
-Route.get   ('/order/:id/copy', 'OrderController.copy'); 	// TODO : Добавить возможность редактировать продукты в заказе
-Route.post  ('/order/create', 'OrderController.store');
+	Route.get   ('/account', 'UserController.show'); 			//render('user.card');
+	Route.get   ('/account/edit', 'UserController.edit'); 		//render('user.form');
+	Route.post  ('/account/edit', 'UserController.update');
+	Route.get   ('/account/orders', 'OrderController.index'); 	//render('order.list');
 
+	Route.get   ('/order/create', 'OrderController.edit'); 		// render('order.form');
+	Route.get   ('/order/:id', 'OrderController.show'); 		// render('order.card');
+	Route.get   ('/order/:id/copy', 'OrderController.copy'); 	// TODO : Добавить возможность редактировать продукты в заказе
+	Route.post  ('/order/create', 'OrderController.store');
+}).middleware('auth');
 
 // Administration panel
 Route.group(() => {

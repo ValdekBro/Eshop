@@ -7,7 +7,7 @@ const Database = use('Database')
 
 class CartController {
     async index({ request, view,  auth, session, response }) {
-
+        if(!auth.user) return response.status(401).send('User unauthorized')
         const user = await User
             .find(auth.user.id)
             .catch( function(e) {
@@ -96,7 +96,6 @@ class CartController {
         }
         else {
             session.put('error_beauti_message', "Product not found");
-            console.error('Product not found');
             return response.status(404).send('Product not found');
         } 
         
