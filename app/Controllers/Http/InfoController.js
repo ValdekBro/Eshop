@@ -4,8 +4,17 @@ const User = use('App/Models/User');
 
 class InfoController {
     async index({ request, view, response }) {
-        // const user = await User.find(2);
-        // console.log( (await user.products().withPivot('quantity').fetch()).toJSON() );
+
+        if (request.url() =='/FAQ') {
+
+
+
+        } else if(request.url() =='/info') {
+
+            
+
+        }
+
         return view.render('in_developing');
     }
 }

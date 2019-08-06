@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+      <div class="styles">
+          @!section('styles') 
+      </div>
   </head>
   <body>
+    <div class="preloaded_scripts">
+      @!section('preloaded_scripts') 
+    </div>
     <header class="header">
     </header>
 
@@ -18,6 +24,9 @@
       </div>
     </div>
   </body>
+  <div class="scripts">
+      @!section('scripts') 
+  </div>
 </html>
 {{--  
 @layout('main')

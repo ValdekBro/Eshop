@@ -1,9 +1,9 @@
 'use strict'
 
 class NewsController {
-    async index({ request, view, response }) {
+    async index({ request, view, session, response }) {
 
-        return view.render('in_developing');
+        return view.render('home');
     }
 }
 
