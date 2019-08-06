@@ -4,10 +4,9 @@ const Category = use('App/Models/Category');
 
 
 class ProductController {
-    async index({ request, view, response }) {
-        const category_id  = request.input('category', '1');
+    async index({ request, params, view, session, response }) {
         const category = await Category
-            .find(category_id)
+            .find(params.category)
             .catch( function(e) {
                 session.put('error', e.toString());
                 session.put('error_code', e.code);
