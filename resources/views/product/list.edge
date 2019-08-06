@@ -21,30 +21,6 @@
                 });
             }
             
-            function filtByDate(){
-                var fdate = $('#date-filter').val();
-                var oXHR = new XMLHttpRequest();
-          
-                let date = 'date=' + encodeURIComponent(fdate);
-                oXHR.open("GET", "/ajax/posts_by_date?" + date, true);
-          
-                oXHR.onreadystatechange = function (oEvent) {  
-                    if (oXHR.readyState === 4) {  
-                        if (oXHR.status === 200) {  
-                            const posts = JSON.parse(oXHR.responseText);
-                            console.log(posts);                             // Posts to view
-                        } else {  
-                        console.log("Error", oXHR.statusText);  
-                        }  
-                    }  
-                }; 
-          
-                oXHR.send();  
-          
-                            // Without requests
-                $(".created_at").parent().hide();
-                $(".created_at:contains("+fdate.substring(0,10)+")").parent().show();
-            }
         </script>
     @endsection
 

@@ -34,23 +34,28 @@ class User extends Model {
 	orders () {
 		return this.hasMany('App/Models/Order')
 	}
+
 	products () {
-                return this
-                .belongsToMany('App/Models/Product', 'user_id', 'product_id', 'id', 'id')
-                .pivotModel('App/Models/UserProduct')
-        }
+        return this
+            .belongsToMany('App/Models/Product', 'user_id', 'product_id', 'id', 'id')
+            .pivotModel('App/Models/UserProduct')
+	}
+	
 	userNews () {
         return this.hasMany('App/Models/UserNew')
 	}
+
 	personInfo () {
         return this.belongsTo('App/Models/PersonInfo', 'person_info_id')
 	}
+
 	legalEntityInfo () {
         return this.belongsTo('App/Models/LegalEntityInfo', 'legal_entity_info_id')
 	}
+	
 	deliveryDetail () {
         return this.belongsTo('App/Models/DeliveryDetail', 'delivery_details_id')
-        }
+    }
 }
 
 module.exports = User

@@ -1,0 +1,53 @@
+@layout('main')
+
+    @section('preloaded_scripts')
+        {{ csrfField() }}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script>
+            function send( id, action ){
+                const token = document.getElementsByName('_csrf')[0].value;
+                $.ajax({
+                    type: "POST",
+                    url: "/cart/"+action,
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    },
+                    data : {
+                        product_id : id
+                    }
+                })
+                .done(function( response ) {
+                    console.log(response)
+                    make_changes(id, action);
+                });
+            }
+            function make_changes( id, action ) {
+                if(action == 'reduce'){
+                    let num = Number.parseInt($('i[id^="'+id+'"]').text());
+                    $('i[id^="'+id+'"]').text(  --num   );
+                } else if(action == 'increase') {
+                    let num = Number.parseInt($('i[id^="'+id+'"]').text());
+                    $('i[id^="'+id+'"]').text(  ++num   );
+                } else if(action == 'remove') {
+                    $('h3[id^="'+id+'"]').remove();
+                } 
+            }
+        </script>
+    @endsection
+
+    @section('sidebar')
+    <h2> Cart </h2>
+    @endsection
+
+    @section('content')
+    @each(product in products)
+        <h3 id="{{ product.id }}">
+            <input type="button" value="X" onclick="send( {{ product.id }}, 'remove' )">
+            {{ product.name }} 
+            <input type="button" value="-" onclick="send( {{ product.id }}, 'reduce' )"> 
+            <i id="{{ product.id }}">{{ product.pivot.quantity }}</i>
+            <input type="button" value="+" onclick="send( {{ product.id }}, 'increase' )"> 
+        </h3>
+    @endeach
+    
+    @endsection 
