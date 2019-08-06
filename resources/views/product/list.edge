@@ -1,0 +1,60 @@
+@layout('main')
+
+    @section('preloaded_scripts')
+        {{ csrfField() }}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script>
+            function buyProduct( id ){
+                const token = document.getElementsByName('_csrf')[0].value;
+                $.ajax({
+                    type: "POST",
+                    url: "/cart/add",
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    },
+                    data : {
+                        product_id : id
+                    }
+                })
+                .done(function( response ) {
+                    console.log( response );
+                });
+            }
+            
+            function filtByDate(){
+                var fdate = $('#date-filter').val();
+                var oXHR = new XMLHttpRequest();
+          
+                let date = 'date=' + encodeURIComponent(fdate);
+                oXHR.open("GET", "/ajax/posts_by_date?" + date, true);
+          
+                oXHR.onreadystatechange = function (oEvent) {  
+                    if (oXHR.readyState === 4) {  
+                        if (oXHR.status === 200) {  
+                            const posts = JSON.parse(oXHR.responseText);
+                            console.log(posts);                             // Posts to view
+                        } else {  
+                        console.log("Error", oXHR.statusText);  
+                        }  
+                    }  
+                }; 
+          
+                oXHR.send();  
+          
+                            // Without requests
+                $(".created_at").parent().hide();
+                $(".created_at:contains("+fdate.substring(0,10)+")").parent().show();
+            }
+        </script>
+    @endsection
+
+    @section('sidebar')
+    <h2> {{ category.name }} </h2>
+    @endsection
+
+    @section('content')
+    @each(product in products)
+        <h3>{{ product.name }} <input type="button" value="Buy" onclick="buyProduct( {{ product.id }} )"> <a href={{ category.id + "/" + product.id }}><button>-></button></a>  </h3>
+    @endeach
+    
+    @endsection 

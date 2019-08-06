@@ -1,0 +1,13 @@
+@layout('main')
+
+    @section('sidebar')
+    <h2> Catalog </h2>
+    @endsection
+
+    @section('content')
+
+    @each(category in categories)
+        <h3><a href={{ "catalog/" + category.id }}> {{ category.name }}</a></h3>
+    @endeach
+    
+    @endsection 
