@@ -494,7 +494,7 @@ DROP TABLE IF EXISTS `template_properties`;
 CREATE TABLE `template_properties` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `template_id` int(11) NOT NULL,
-  `caption` text NOT NULL,
+  `caption` text,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -651,4 +651,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-08-07 15:39:26
+-- Dump completed on 2019-08-07 16:35:31
