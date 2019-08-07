@@ -15,8 +15,8 @@ class AdminPermisionsCheck {
       return response.status(401).redirect('/');
     }
     if(auth.user.type != 'admin' 
-      || auth.user.type != 'content_manager'
-      || auth.user.type != 'regional_manager') {  
+      && auth.user.type != 'content_manager'
+      && auth.user.type != 'regional_manager') {  
       session.put('error_beauti_message', "You are not allowed to access this resource");
       return response.status(401).redirect('/');
     }

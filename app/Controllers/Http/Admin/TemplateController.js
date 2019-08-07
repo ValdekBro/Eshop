@@ -19,7 +19,7 @@ class TemplateController {
 	 * @param {Response} ctx.response
 	 * @param {View} ctx.view
 	 */
-	async index({ request, response, view }) {
+	async index({ request, response, session, view }) {
 
 		const templates = await Template
 			.query()
@@ -34,6 +34,9 @@ class TemplateController {
                 return response.status(404).send( session.get('error_beauti_message') + '. ' + session.get('error_message') )
             });
 			
+		if (request.ajax())
+			response.send(templates.toJSON());
+		else 
 			view.render('admin.template.list', { templates : templates.toJSON() });
 	}
 
@@ -57,8 +60,10 @@ class TemplateController {
 	 * @param {Request} ctx.request
 	 * @param {Response} ctx.response
 	 */
-	async store({ request, response }) {
+	async store({ request, session, response }) {
+		const { id } = request.all();
 		let template = new Template;
+		if(id) template.category_id=id;
 		await template
 			.save()
 			.catch( function(e) {
@@ -104,7 +109,7 @@ class TemplateController {
 	 * @param {Request} ctx.request
 	 * @param {Response} ctx.response
 	 */
-	async update({ params, request, response }) {
+	async update({ params, request, session, response }) {
 		const { id, name } = request.all();
 
 		if(!id || !name) {
@@ -143,7 +148,7 @@ class TemplateController {
 	 * @param {Request} ctx.request
 	 * @param {Response} ctx.response
 	 */
-	async destroy({ params, request, response }) {
+	async destroy({ params, request, session, response }) {
 		const { id } = request.all();
 
 		if(!id ) {
