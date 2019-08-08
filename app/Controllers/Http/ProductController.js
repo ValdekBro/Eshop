@@ -5,12 +5,12 @@ const Category = use('App/Models/Category');
 
 class ProductController {
     async index({ request, params, view, session, response }) { try {
-            const category = await Category.find(params.category)
-            if (!category) {
-                session.put('error_beauti_message', "Category not found");
-				console.error(session.get('error_beauti_message'));
-				return response.status(404).send(session.get('error_beauti_message'));
-            }
+            const category = await Category
+                .findOrFail(params.category)
+                .catch(function (e) {
+                    session.put('error_beauti_message', "Category not found");
+                    throw e;
+                });
 
             const products = await category
                 .products()

@@ -68,16 +68,19 @@ Route.group(() => {
 	Route.post  ('/product/create', 'ProductController.store');
 	Route.get   ('/product/:id/copy', 'ProductController.copy');
 	Route.get   ('/product/:id/edit', 'ProductController.edit');
-	Route.post  ('/product/:id/edit', 'ProductController.update');
-	Route.post  ('/product/:id/delete', 'ProductController.destroy');	//ajax
+	Route.post  ('/product/edit', 'ProductController.update');
+	Route.post  ('/product/delete', 'ProductController.destroy');					//ajax
+	Route.post  ('/product/property/create', 'ProductPropertyController.store');	//ajax
+	Route.post  ('/product/property/edit', 'ProductPropertyController.update');		//ajax
+	Route.post  ('/product/property/delete', 'ProductPropertyController.destroy');	//ajax
 
 	Route.get   ('/templates', 'TemplateController.index'); 		//render('admin.template.list');
-	Route.post  ('/template/create', 'TemplateController.store');							//ajax
-	Route.post  ('/template/:id/edit', 'TemplateController.update');						//ajax
-	Route.post  ('/template/:id/delete', 'TemplateController.destroy');						//ajax
-	Route.post  ('/template/property/create', 'TemplatePropertyController.store');			//ajax
-	Route.post  ('/template/property/:id/edit', 'TemplatePropertyController.update');		//ajax
-	Route.post  ('/template/property/:id/delete', 'TemplatePropertyController.destroy');	//ajax
+	Route.post  ('/template/create', 'TemplateController.store');						//ajax
+	Route.post  ('/template/edit', 'TemplateController.update');						//ajax
+	Route.post  ('/template/delete', 'TemplateController.destroy');						//ajax
+	Route.post  ('/template/property/create', 'TemplatePropertyController.store');		//ajax
+	Route.post  ('/template/property/edit', 'TemplatePropertyController.update');		//ajax
+	Route.post  ('/template/property/delete', 'TemplatePropertyController.destroy');	//ajax
 
 	Route.get   ('/categories', 'CategoryController.index');		//render('admin.category.list');
 	Route.post  ('/category/create', 'CategoryController.store');		//ajax
@@ -115,5 +118,5 @@ Route.group(() => {
 	// Route.post  ('/new_news/:id/delete', 'NewNewsController.destroy');	//ajax
 
 }).prefix('/administration')
-.middleware('admin')
+// .middleware('admin')
 .namespace('Admin')

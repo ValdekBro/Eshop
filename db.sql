@@ -397,32 +397,31 @@ LOCK TABLES `product_images` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `product_template_properties`
+-- Table structure for table `product_properties`
 --
 
-DROP TABLE IF EXISTS `product_template_properties`;
+DROP TABLE IF EXISTS `product_properties`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `product_template_properties` (
-  `template_property_id` int(11) NOT NULL,
+CREATE TABLE `product_properties` (
   `product_id` int(11) NOT NULL,
-  `propery_value` text,
+  `caption` text,
+  `value` text,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   KEY `product_id` (`product_id`),
-  KEY `template_property_id` (`template_property_id`),
-  CONSTRAINT `product_template_properties_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
-  CONSTRAINT `product_template_properties_ibfk_2` FOREIGN KEY (`template_property_id`) REFERENCES `template_properties` (`id`)
+  CONSTRAINT `product_properties_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `product_template_properties`
+-- Dumping data for table `product_properties`
 --
 
-LOCK TABLES `product_template_properties` WRITE;
-/*!40000 ALTER TABLE `product_template_properties` DISABLE KEYS */;
-/*!40000 ALTER TABLE `product_template_properties` ENABLE KEYS */;
+LOCK TABLES `product_properties` WRITE;
+/*!40000 ALTER TABLE `product_properties` DISABLE KEYS */;
+INSERT INTO `product_properties` VALUES (23,'Color',NULL,'2019-08-09 00:46:38','2019-08-09 00:46:38'),(23,'Size',NULL,'2019-08-09 00:46:38','2019-08-09 00:46:38'),(23,'Smoothnes',NULL,'2019-08-09 00:46:38','2019-08-09 00:46:38'),(23,NULL,NULL,'2019-08-09 00:46:38','2019-08-09 00:46:38');
+/*!40000 ALTER TABLE `product_properties` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -434,17 +433,17 @@ DROP TABLE IF EXISTS `products`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `products` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `category_id` int(11) NOT NULL,
-  `code` text NOT NULL,
-  `name` text NOT NULL,
-  `price` double NOT NULL,
+  `category_id` int(11) DEFAULT NULL,
+  `code` text,
+  `name` text,
+  `price` double DEFAULT NULL,
   `description` longtext,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `category_id` (`category_id`),
+  KEY `products_ibfk_1` (`category_id`),
   CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -453,7 +452,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (1,1,'12345678912345','Some prod',32414.12,'blablabla',NULL,NULL),(2,1,'43324s234f23','Another prod',228.322,'Flexible product',NULL,NULL),(3,2,'32f42','Pen',21,'Just a pen to write a text',NULL,NULL),(4,2,'43l11','Pensil',14,'Pensil with hight quality',NULL,NULL);
+INSERT INTO `products` VALUES (1,1,'12345678912345','Some prod',32414.12,'blablabla',NULL,NULL),(2,1,'43324s234f23','Another prod',228.322,'Flexible product',NULL,NULL),(3,2,'32f42','Pen',21,'Just a pen to write a text',NULL,NULL),(4,2,'43l11','Pensil',14,'Pensil with hight quality',NULL,NULL),(23,2,'12s23','\"Pen 9\"',50.99,'\"New pen. Pen 9\"','2019-08-09 00:46:38','2019-08-09 01:13:52');
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -498,9 +497,9 @@ CREATE TABLE `template_properties` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `template_id` (`template_id`),
+  KEY `template_properties_ibfk_1` (`template_id`),
   CONSTRAINT `template_properties_ibfk_1` FOREIGN KEY (`template_id`) REFERENCES `templates` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -509,7 +508,7 @@ CREATE TABLE `template_properties` (
 
 LOCK TABLES `template_properties` WRITE;
 /*!40000 ALTER TABLE `template_properties` DISABLE KEYS */;
-INSERT INTO `template_properties` VALUES (1,1,'Color',NULL,NULL),(2,1,'Size',NULL,NULL),(3,1,'Smoothnes',NULL,NULL);
+INSERT INTO `template_properties` VALUES (1,1,'Color',NULL,NULL),(2,1,'Size',NULL,NULL),(3,1,'Smoothnes',NULL,NULL),(23,1,NULL,'2019-08-08 16:05:00','2019-08-08 16:05:00');
 /*!40000 ALTER TABLE `template_properties` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -522,14 +521,14 @@ DROP TABLE IF EXISTS `templates`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `templates` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `category_id` int(11) NOT NULL,
+  `category_id` int(11) DEFAULT NULL,
   `name` text,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `category_id` (`category_id`),
+  KEY `templates_ibfk_1` (`category_id`),
   CONSTRAINT `templates_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -590,7 +589,7 @@ CREATE TABLE `user_products` (
   KEY `product_id` (`product_id`),
   CONSTRAINT `user_products_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   CONSTRAINT `user_products_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -651,4 +650,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-08-07 16:35:31
+-- Dump completed on 2019-08-09  1:25:36

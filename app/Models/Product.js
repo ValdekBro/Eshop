@@ -20,10 +20,8 @@ class Product extends Model {
             .belongsToMany('App/Models/Order')
             .pivotModel('App/Models/OrderProduct')
     }
-    templateProperties () {
-        return this
-            .belongsToMany('App/Models/TemplateProperty')
-            .pivotModel('App/Models/ProductTemplateProperty')
+    properties () {
+        return this.hasMany('App/Models/ProductProperty')
     }
     category () {
         return this.belongsTo('App/Models/Category', 'category_id')
