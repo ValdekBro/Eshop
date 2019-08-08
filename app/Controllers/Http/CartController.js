@@ -7,12 +7,12 @@ const Database = use('Database')
 
 class CartController {
 	async index({ request, view, auth, session, response }) { try {
-			const user = await User.find(auth.user.id);
-			if (!user) {
-				session.put('error_beauti_message', "User not found");
-				console.error(session.get('error_beauti_message'));
-				return response.status(404).redirect('/home');
-			}
+			const user = await User
+				.findOrFail(auth.user.id)
+				.catch(function (e) {
+					session.put('error_beauti_message', "User not found");
+					throw e;
+				});
 
 			const products = await user.products()
 				.withPivot('quantity')
@@ -50,12 +50,12 @@ class CartController {
 	}
 
 	async insert({ request, auth, session, response }) { try {
-			const user = await User.find(auth.user.id);
-			if (!user) {
-				session.put('error_beauti_message', "User not found");
-				console.error(session.get('error_beauti_message'));
-				return response.status(404).send(session.get('error_beauti_message'));
-			}
+			const user = await User
+				.findOrFail(auth.user.id)
+				.catch(function (e) {
+					session.put('error_beauti_message', "User not found");
+					throw e;
+				});
 
 			const { product_id } = request.all();
 			if (!product_id) {
@@ -64,12 +64,12 @@ class CartController {
 				return response.status(404).send(session.get('error_beauti_message'));
 			}
 
-			const product = await Product.find(product_id);
-			if (!product) {
-				session.put('error_beauti_message', "Product not found");
-				console.error(session.get('error_beauti_message'));
-				return response.status(404).send(session.get('error_beauti_message'));
-			}
+			const product = await Product
+				.findOrFail(product_id)
+				.catch(function (e) {
+					session.put('error_beauti_message', "Product not found");
+					throw e;
+				});
 
 			const exising_user_product = await Database
 				.from('user_products')
@@ -86,7 +86,7 @@ class CartController {
 
 			if (exising_user_product) { // If product is already in the cart
 
-				const user_product = await UserProduct.find(exising_user_product.id);
+				const user_product = await UserProduct.findOrFail(exising_user_product.id);
 				user_product.quantity++;
 				await user_product.save();
 
@@ -113,12 +113,12 @@ class CartController {
 	}
 
 	async remove({ request, auth, session, response }) { try {
-			const user = await User.find(auth.user.id);
-			if (!user) {
-				session.put('error_beauti_message', "User not found");
-				console.error(session.get('error_beauti_message'));
-				return response.status(404).send(session.get('error_beauti_message'));
-			}
+			const user = await User
+				.findOrFail(auth.user.id)
+				.catch(function (e) {
+					session.put('error_beauti_message', "User not found");
+					throw e;
+				});
 
 			const { product_id } = request.all();
 			if (!product_id) {
@@ -148,12 +148,12 @@ class CartController {
 
 	async increase({ request, auth, session, response }) { try {
 
-			const user = await User.find(auth.user.id);
-			if (!user) {
-				session.put('error_beauti_message', "User not found");
-				console.error(session.get('error_beauti_message'));
-				return response.status(404).send(session.get('error_beauti_message'));
-			}
+			const user = await User
+				.findOrFail(auth.user.id)
+				.catch(function (e) {
+					session.put('error_beauti_message', "User not found");
+					throw e;
+				});
 
 			const { product_id } = request.all();
 			if (!product_id) {
@@ -177,7 +177,7 @@ class CartController {
 
 			if (exising_user_product) {
 
-				const user_product = await UserProduct.find(exising_user_product.id);
+				const user_product = await UserProduct.findOrFail(exising_user_product.id);
 				user_product.quantity++;
 				await user_product.save();
 
@@ -199,12 +199,12 @@ class CartController {
 	}
 
 	async reduce({ request, auth, session, response }) { try {
-			const user = await User.find(auth.user.id);
-			if (!user) {
-				session.put('error_beauti_message', "User not found");
-				console.error(session.get('error_beauti_message'));
-				return response.status(404).send(session.get('error_beauti_message'));
-			}
+			const user = await User
+				.findOrFail(auth.user.id)
+				.catch(function (e) {
+					session.put('error_beauti_message', "User not found");
+					throw e;
+				});
 
 			const { product_id } = request.all();
 			if (!product_id) {
@@ -228,7 +228,7 @@ class CartController {
 
 			if (exising_user_product) {
 
-				const user_product = await UserProduct.find(exising_user_product.id);
+				const user_product = await UserProduct.findOrFail(exising_user_product.id);
 				if (user_product.quantity === 0) {   // If product quantity < 1 ...
 
 					await user.products()           // ... remove product from cart

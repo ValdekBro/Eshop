@@ -139,12 +139,12 @@ class TemplateController {
 				return response.status(404).send(session.get('error_beauti_message'));
 			}
 
-			let template = await Template.find(id);
-			if (!template) {
-				session.put('error_beauti_message', "Template not found");
-				console.error(session.get('error_beauti_message'));
-				return response.status(404).send(session.get('error_beauti_message'));
-			}
+			let template = await Template
+				.findOrFail(id)
+				.catch(function (e) {
+					session.put('error_beauti_message', "Template not found");
+					throw e;
+				});
 
 			template.name = name;
 			await template
@@ -183,12 +183,12 @@ class TemplateController {
 				return response.status(404).send(session.get('error_beauti_message'));
 			}
 
-			let template = await Template.find(id);
-			if (!template) {
-				session.put('error_beauti_message', "Template not founded");
-				console.error(session.get('error_beauti_message'));
-				return response.status(404).send(session.get('error_beauti_message'));
-			}
+			let template = await Template
+				.findOrFail(id)
+				.catch(function (e) {
+					session.put('error_beauti_message', "Template not found");
+					throw e;
+				});
 
 			await template
 				.delete()

@@ -54,12 +54,12 @@ class TemplatePropertyController {
 				return response.status(404).send(session.get('error_beauti_message'));
 			}
 
-			const template = await Template.find(id)
-			if (!template) {
-				session.put('error_beauti_message', "Template not found");
-				console.error(session.get('error_beauti_message'));
-				return response.status(404).send(session.get('error_beauti_message'));
-			}
+			const template = await Template
+				.findOrFail(id)
+				.catch(function (e) {
+					session.put('error_beauti_message', "Template not found");
+					throw e;
+				});
 
 			let property = new TemplateProperty;
 
@@ -124,12 +124,12 @@ class TemplatePropertyController {
 				return response.status(404).send(session.get('error_beauti_message'));
 			}
 
-			let property = await TemplateProperty.find(id);
-			if (!property) {
-				session.put('error_beauti_message', "Template property not found");
-				console.error(session.get('error_beauti_message'));
-				return response.status(404).send(session.get('error_beauti_message'));
-			}
+			let property = await TemplateProperty
+				.findOrFail(id)
+				.catch(function (e) {
+					session.put('error_beauti_message', "Template property not found");
+					throw e;
+				});
 
 			property.caption = caption;
 			await property
@@ -169,12 +169,12 @@ class TemplatePropertyController {
 				return response.status(404).send(session.get('error_beauti_message'));
 			}
 
-			let property = await TemplateProperty.find(id);
-			if (!property) {
-				session.put('error_beauti_message', "Template Property not founded");
-				console.error(session.get('error_beauti_message'));
-				return response.status(404).send(session.get('error_beauti_message'));
-			}
+			let property = await TemplateProperty
+				.findOrFail(id)
+				.catch(function (e) {
+					session.put('error_beauti_message', "Template property not found");
+					throw e;
+				});
 
 			await property
 				.delete()
@@ -183,7 +183,7 @@ class TemplatePropertyController {
 					throw e;
 				});
 
-			return response.status(202).send('Template successfully deleted');
+			return response.status(202).send('Template property successfully deleted');
 		} catch (e) {
 			session.put('error', e.toString());
 			session.put('error_code', e.code);
