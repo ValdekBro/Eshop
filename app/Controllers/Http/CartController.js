@@ -6,308 +6,267 @@ const UserProduct = use('App/Models/UserProduct');
 const Database = use('Database')
 
 class CartController {
-    async index({ request, view,  auth, session, response }) {
-        const user = await User
-            .find(auth.user.id)
-            .catch( function(e) {
-                session.put('error', e.toString());
-                session.put('error_code', e.code);
-                session.put('error_message', e.sqlMessage);
-                session.put('error_beauti_message', "Failed to find User");
-                console.error(e);
-                return response.status(404).redirect('/home');
-            });
-        if(!user) {
-            session.put('error_beauti_message', "User not founded");
-            console.error(session.get('error_beauti_message'));
-            return response.status(404).redirect('/home');
-        }
+	async index({ request, view, auth, session, response }) { try {
+			const user = await User.find(auth.user.id);
+			if (!user) {
+				session.put('error_beauti_message', "User not found");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).redirect('/home');
+			}
 
-        const products = await user.products()
-            .withPivot('quantity')
-            .fetch()
-            .catch( function(e) {
-                session.put('error', e.toString());
-                session.put('error_code', e.code);
-                session.put('error_message', e.sqlMessage);
-                session.put('error_beauti_message', "Failed to load Cart products");
-                console.error(e);
-                return response.status(404).send( session.get('error_beauti_message') + '. ' + session.get('error_message') )
-            });
+			const products = await user.products()
+				.withPivot('quantity')
+				.fetch()
+				.catch(e => {
+					session.put('error_beauti_message', "Failed to load Cart products");
+					throw e;
+				});
 
-        return view.render('user.cart', { 
-            products : products.toJSON(),
-            points : user.points
-         });
-    }
+			if (request.ajax())
+				return response.send({
+					products: products.toJSON(),
+					points: user.points
+				});
+			else
+				return view.render('user.cart', {
+					products: products.toJSON(),
+					points: user.points
+				});
 
-    async insert({ request,  auth, session, response }) {
 
-        const user = await User
-            .find(auth.user.id)
-            .catch( function(e) {
-                session.put('error', e.toString());
-                session.put('error_code', e.code);
-                session.put('error_message', e.sqlMessage);
-                session.put('error_beauti_message', "Failed to find User");
-                console.error(e);
-                return response.status(404).send( session.get('error_beauti_message') + '. ' + session.get('error_message') )
-            });
-        if(!user) {
-            session.put('error_beauti_message', "User not founded");
-            console.error(session.get('error_beauti_message'));
-            return response.status(404).send(session.get('error_beauti_message'));
-        }
+		} catch (e) {
+			session.put('error', e.toString());
+			session.put('error_code', e.code);
+			session.put('error_message', e.sqlMessage);
+			console.error(e);
 
-        const { product_id } = request.all();
-        if(!product_id) {
-            session.put('error_beauti_message', "Product id not founded");
-            console.error(session.get('error_beauti_message'));
-            return response.status(404).send(session.get('error_beauti_message'));
-        }
+			if (request.ajax())
+				return response.status(400)
+					.send(session.get('error_beauti_message') + '. ' + session.get('error_message'));
+			else
+				return response.status(400).redirect('/home');
 
-        if ( await Product.find(product_id) ) {
+		}
+	}
 
-            const exising_user_product = await Database
-                .from('user_products')
-                .where(function () {
-                    this
-                    .where('user_id', user.id)
-                    .where('product_id', product_id);
-                })
-                .first()
-                .catch( function(e) {
-                    session.put('error', e.toString());
-                    session.put('error_code', e.code);
-                    session.put('error_message', e.sqlMessage);
-                    session.put('error_beauti_message', "Failed to load Products data");
-                    console.error(e);
-                    return response.status(404).send( session.get('error_beauti_message') + '. ' + session.get('error_message') );
-                });
-            
-            if(exising_user_product) { 
+	async insert({ request, auth, session, response }) { try {
+			const user = await User.find(auth.user.id);
+			if (!user) {
+				session.put('error_beauti_message', "User not found");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
 
-                const user_product = await UserProduct.find(exising_user_product.id);
-                user_product.quantity++;
-                await user_product.save();
+			const { product_id } = request.all();
+			if (!product_id) {
+				session.put('error_beauti_message', "Product id not founded");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
 
-            } else {
+			const product = await Product.find(product_id);
+			if (!product) {
+				session.put('error_beauti_message', "Product not found");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
 
-                await user.products()
-                    .attach([product_id])
-                    .catch( function(e) {
-                        session.put('error', e.toString());
-                        session.put('error_code', e.code);
-                        session.put('error_message', e.sqlMessage);
-                        session.put('error_beauti_message', "Failed to add Product into the Cart");
-                        console.error(e);
-                        return response.status(404).send( session.get('error_beauti_message') + '. ' + session.get('error_message') );
-                    });
+			const exising_user_product = await Database
+				.from('user_products')
+				.where(function () {
+					this
+						.where('user_id', user.id)
+						.where('product_id', product_id);
+				})
+				.first()
+				.catch(e => {
+					session.put('error_beauti_message', "Failed to load Cart Products data");
+					throw e;
+				});
 
-            }
-        }
-        else {
-            session.put('error_beauti_message', "Product not found");
-            console.error(session.get('error_beauti_message'));
-            return response.status(404).send(session.get('error_beauti_message'));
-        }
-        
-        session.put('message', 'Product added successfully');
-        return response.status(202).send('Product added successfully');
-    }
+			if (exising_user_product) { // If product is already in the cart
 
-    async remove({ request, auth, session, response }) {
-        
-        const user = await User
-            .find(auth.user.id)
-            .catch( function(e) {
-                session.put('error', e.toString());
-                session.put('error_code', e.code);
-                session.put('error_message', e.sqlMessage);
-                session.put('error_beauti_message', "Failed to find User");
-                console.error(e);
-                return response.status(404).send( session.get('error_beauti_message') + '. ' + session.get('error_message') )
-            });
-        if(!user) {
-            session.put('error_beauti_message', "User not found");
-            console.error(session.get('error_beauti_message'));
-            return response.status(404).send(session.get('error_beauti_message'));
-        }
+				const user_product = await UserProduct.find(exising_user_product.id);
+				user_product.quantity++;
+				await user_product.save();
 
-        const { product_id } = request.all();
-        if(!product_id) {
-            session.put('error_beauti_message', "Parameter Product_id not found");
-            console.error(session.get('error_beauti_message'));
-            return response.status(404).send(session.get('error_beauti_message'));
-        }
+			} else {
 
-        await user.products()
-            .detach([product_id])
-            .catch( function(e) {
-                session.put('error', e.toString());
-                session.put('error_code', e.code);
-                session.put('error_message', e.sqlMessage);
-                session.put('error_beauti_message', "Failed to delete Cart product");
-                console.error(e);
-                return response.status(404).send( session.get('error_beauti_message') + '. ' + session.get('error_message') )
-            });
+				await user.products()
+					.attach([product_id])
+					.catch(e => {
+						session.put('error_beauti_message', "Failed to add Product into the Cart");
+						throw e;
+					});
 
-        session.put('message', 'Product removed successfull');
-        return response.status(202).send('Product removed successfull');
+			}
+			session.put('message', 'Product added successfully');
+			return response.status(202).send('Product added successfully');
 
-    }
+		} catch (e) {
+			session.put('error', e.toString());
+			session.put('error_code', e.code);
+			session.put('error_message', e.sqlMessage);
+			console.error(e);
+			return response.status(400).send(session.get('error_beauti_message') + '. ' + session.get('error_message'));
+		}
+	}
 
-    async increase({ request, auth, session, response }) {
+	async remove({ request, auth, session, response }) { try {
+			const user = await User.find(auth.user.id);
+			if (!user) {
+				session.put('error_beauti_message', "User not found");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
 
-        const user = await User
-            .find(auth.user.id)
-            .catch( function(e) {
-                session.put('error', e.toString());
-                session.put('error_code', e.code);
-                session.put('error_message', e.sqlMessage);
-                session.put('error_beauti_message', "Failed to find User");
-                console.error(e);
-                return response.status(404).send( session.get('error_beauti_message') + '. ' + session.get('error_message') )
-            });
-        if(!user) {
-            session.put('error_beauti_message', "User not founded");
-            console.error(session.get('error_beauti_message'));
-            return response.status(404).send(session.get('error_beauti_message'));
-        }
+			const { product_id } = request.all();
+			if (!product_id) {
+				session.put('error_beauti_message', "Parameter Product_id not found");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
 
-        const { product_id } = request.all();
-        if(!product_id) {
-            session.put('error_beauti_message', "Parameter Product_id not found");
-            console.error(session.get('error_beauti_message'));
-            return response.status(404).send(session.get('error_beauti_message'));
-        }
+			await user.products()
+				.detach([product_id])
+				.catch(e => {
+					session.put('error_beauti_message', "Failed to delete Cart product");
+					throw e;
+				});
 
-        if ( await Product.find(product_id) ) {
+			session.put('message', 'Product removed successfull');
+			return response.status(202).send('Product removed successfull');
 
-            const exising_user_product = await Database
-                .from('user_products')
-                .where(function () {
-                    this
-                    .where('user_id', user.id)
-                    .where('product_id', product_id);
-                })
-                .first()
-                .catch( function(e) {
-                    session.put('error', e.toString());
-                    session.put('error_code', e.code);
-                    session.put('error_message', e.sqlMessage);
-                    session.put('error_beauti_message', "Failed to load Products data");
-                    console.error(e);
-                    return response.status(404).send( session.get('error_beauti_message') + '. ' + session.get('error_message') );
-                });
-            
-            if(exising_user_product) { 
+		} catch (e) {
+			session.put('error', e.toString());
+			session.put('error_code', e.code);
+			session.put('error_message', e.sqlMessage);
+			console.error(e);
+			return response.status(400).send(session.get('error_beauti_message') + '. ' + session.get('error_message'));
+		}
+	}
 
-                const user_product = await UserProduct.find(exising_user_product.id); 
-                user_product.quantity++;
-                await user_product.save();
+	async increase({ request, auth, session, response }) { try {
 
-            } else 
-                return response.status(404).send( session.get('error_beauti_message') + '. ' + session.get('error_message') );
+			const user = await User.find(auth.user.id);
+			if (!user) {
+				session.put('error_beauti_message', "User not found");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
 
-        }
-        else {
-            session.put('error_beauti_message', "Product not found");
-            console.error('Product not found');
-            return response.status(404).send('Product not found');
-        } 
-        
-        return response.status(202).send('Product quatity increased successfull');
+			const { product_id } = request.all();
+			if (!product_id) {
+				session.put('error_beauti_message', "Parameter Product_id not found");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
 
-    }
+			const exising_user_product = await Database
+				.from('user_products')
+				.where(function () {
+					this
+						.where('user_id', user.id)
+						.where('product_id', product_id);
+				})
+				.first()
+				.catch(e => {
+					session.put('error_beauti_message', "Failed to load Products data");
+					throw e;
+				});
 
-    async reduce({ request, auth, session, response }) {
-        const user = await User
-            .find(auth.user.id)
-            .catch( function(e) {
-                session.put('error', e.toString());
-                session.put('error_code', e.code);
-                session.put('error_message', e.sqlMessage);
-                session.put('error_beauti_message', "Failed to find User");
-                console.error(e);
-                return response.status(404).send( session.get('error_beauti_message') + '. ' + session.get('error_message') )
-            });
-        if(!user) {
-            session.put('error_beauti_message', "User not founded");
-            console.error(session.get('error_beauti_message'));
-            return response.status(404).send(session.get('error_beauti_message'));
-        }
+			if (exising_user_product) {
 
-        const { product_id } = request.all();
-        if(!product_id) {
-            session.put('error_beauti_message', "Parameter Product_id not found");
-            console.error(session.get('error_beauti_message'));
-            return response.status(404).send(session.get('error_beauti_message'));
-        }
+				const user_product = await UserProduct.find(exising_user_product.id);
+				user_product.quantity++;
+				await user_product.save();
 
-        if ( await Product.find(product_id) ) {
+			} else {
+				session.put('error_beauti_message', "Product not found in Cart");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
 
-            const exising_user_product = await Database
-                .from('user_products')
-                .where(function () {
-                    this
-                    .where('user_id', user.id)
-                    .where('product_id', product_id);
-                })
-                .first()
-                .catch( function(e) {
-                    session.put('error', e.toString());
-                    session.put('error_code', e.code);
-                    session.put('error_message', e.sqlMessage);
-                    session.put('error_beauti_message', "Failed to load Products data");
-                    console.error(e);
-                    return response.status(404).send( session.get('error_beauti_message') + '. ' + session.get('error_message') );
-                });
-            
-            if(exising_user_product) { 
+			return response.status(202).send('Product quatity increased successfull');
 
-                const user_product = await UserProduct.find(exising_user_product.id); 
-                if(user_product.quantity === 0) {   // If product quantity < 1 ...
+		} catch (e) {
+			session.put('error', e.toString());
+			session.put('error_code', e.code);
+			session.put('error_message', e.sqlMessage);
+			console.error(e);
+			return response.status(400).send(session.get('error_beauti_message') + '. ' + session.get('error_message'));
+		}
+	}
 
-                    await user.products()           // ... remove product from cart
-                        .detach([product_id])
-                        .catch( function(e) {
-                            session.put('error', e.toString());
-                            session.put('error_code', e.code);
-                            session.put('error_message', e.sqlMessage);
-                            session.put('error_beauti_message', "Failed to delete Cart product");
-                            console.error(e);
-                            return response.status(404).send( session.get('error_beauti_message') + '. ' + session.get('error_message') )
-                        });
+	async reduce({ request, auth, session, response }) { try {
+			const user = await User.find(auth.user.id);
+			if (!user) {
+				session.put('error_beauti_message', "User not found");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
 
-                    session.put('message', 'Product removed successfull');
-                    return response.status(202).send('Product removed successfull');
+			const { product_id } = request.all();
+			if (!product_id) {
+				session.put('error_beauti_message', "Parameter Product_id not found");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
 
-                } else {
-                    user_product.quantity--;
-                    await user_product
-                        .save()
-                        .catch( function(e) {
-                            session.put('error', e.toString());
-                            session.put('error_code', e.code);
-                            session.put('error_message', e.sqlMessage);
-                            session.put('error_beauti_message', "Failed to save product");
-                            console.error(e);
-                            return response.status(404).send( session.get('error_beauti_message') + '. ' + session.get('error_message') )
-                        });
-                }
+			const exising_user_product = await Database
+				.from('user_products')
+				.where(function () {
+					this
+						.where('user_id', user.id)
+						.where('product_id', product_id);
+				})
+				.first()
+				.catch( e => {
+					session.put('error_beauti_message', "Failed to load Products data");
+					throw e;
+				});
 
-            } else 
-                return response.status(404).send( session.get('error_beauti_message') + '. ' + session.get('error_message') );
+			if (exising_user_product) {
 
-        }
-        else {
-            session.put('error_beauti_message', "Product not found");
-            console.error('Product not found');
-            return response.status(404).send('Product not found');
-        } 
-        return response.status(202).send('Product quatity reduced successfull');
-    }
+				const user_product = await UserProduct.find(exising_user_product.id);
+				if (user_product.quantity === 0) {   // If product quantity < 1 ...
+
+					await user.products()           // ... remove product from cart
+						.detach([product_id])
+						.catch( e => {
+							session.put('error_beauti_message', "Failed to delete Cart product");
+							throw e;
+						});
+
+					session.put('message', 'Product removed successfull');
+					return response.status(202).send('Product removed successfull');
+
+				} else {
+					user_product.quantity--;
+					await user_product
+						.save()
+						.catch( e => { 
+							session.put('error_beauti_message', "Failed to save product");
+							throw e;
+						});
+				}
+
+			} else {
+				session.put('error_beauti_message', "Product not found in Cart");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
+
+			return response.status(202).send('Product quatity reduced successfull');
+
+		} catch (e) {
+			session.put('error', e.toString());
+			session.put('error_code', e.code);
+			session.put('error_message', e.sqlMessage);
+			console.error(e);
+			return response.status(400).send(session.get('error_beauti_message') + '. ' + session.get('error_message'));
+		}
+	}
 }
 
 module.exports = CartController

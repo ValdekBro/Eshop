@@ -44,55 +44,42 @@ class TemplatePropertyController {
 	 * @param {Request} ctx.request
 	 * @param {Response} ctx.response
 	 */
-	async store({ request, response }) {
-		const { id } = request.all();
-		if(!id) {
-			session.put('error_beauti_message', "Parameters not founded");
-            console.error(session.get('error_beauti_message'));
-            return response.status(404).send( session.get('error_beauti_message'));
-		}
+	async store({ request, session, response }) {
 
-		const template = await Template
-			.find(id)
-			.catch(function (e) {
-				session.put('error', e.toString());
-				session.put('error_code', e.code);
-				session.put('error_message', e.sqlMessage);
+		try {
+			const { id } = request.all();
+			if (!id) {
+				session.put('error_beauti_message', "Parameters not founded");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
+
+			const template = await Template.find(id)
+			if (!template) {
 				session.put('error_beauti_message', "Template not found");
-				console.error(e);
-				return response.status(404).send(session.get('error_beauti_message') + '. ' + session.get('error_message'))
-			});
-		if(!template) {
-			session.put('error_beauti_message', "Template not found");
-            console.error(session.get('error_beauti_message'));
-            return response.status(404).send( session.get('error_beauti_message'));
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
+
+			let property = new TemplateProperty;
+
+			await template
+				.templateProperties()
+				.save(property)
+				.catch(function (e) {
+					session.put('error_beauti_message', "Failed to save template property");
+					throw e;
+				});
+
+			response.status(202).send('Template property successfully created');
 		}
-
-		let property = new TemplateProperty;
-		await property
-			.save()
-			.catch(function (e) {
-				session.put('error', e.toString());
-				session.put('error_code', e.code);
-				session.put('error_message', e.sqlMessage);
-				session.put('error_beauti_message', "Failed to create template property");
-				console.error(e);
-				return response.status(404).send(session.get('error_beauti_message') + '. ' + session.get('error_message'))
-			});
-
-		await template
-			.templateProperties()
-			.save(property)
-			.catch(function (e) {
-				session.put('error', e.toString());
-				session.put('error_code', e.code);
-				session.put('error_message', e.sqlMessage);
-				session.put('error_beauti_message', "Failed to save template property");
-				console.error(e);
-				return response.status(404).send(session.get('error_beauti_message') + '. ' + session.get('error_message'))
-			});
-
-		return response.status(202).send('Template property successfully created');
+		catch (e) {
+			session.put('error', e.toString());
+			session.put('error_code', e.code);
+			session.put('error_message', e.sqlMessage);
+			console.error(e);
+			return response.status(400).send(session.get('error_beauti_message') + '. ' + session.get('error_message'));
+		}
 	}
 
 	/**
@@ -127,35 +114,41 @@ class TemplatePropertyController {
 	 * @param {Request} ctx.request
 	 * @param {Response} ctx.response
 	 */
-	async update({ params, request, response }) {
-		const { id, caption } = request.all();
+	async update({ params, request, session, response }) {
+		try {
+			const { id, caption } = request.all();
 
-		if(!id || !caption) {
-			session.put('error_beauti_message', "Parameters not found");
-            console.error(session.get('error_beauti_message'));
-            return response.status(404).send( session.get('error_beauti_message'));
+			if (!id || !caption) {
+				session.put('error_beauti_message', "Parameters not found");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
+
+			let property = await TemplateProperty.find(id);
+			if (!property) {
+				session.put('error_beauti_message', "Template property not found");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
+
+			property.caption = caption;
+			await property
+				.save()
+				.catch(function (e) {
+					session.put('error_beauti_message', "Failed to update template");
+					throw e;
+				});
+
+			return response.status(202).send('Template property successfully updated');
+
+		} catch (e) {
+			session.put('error', e.toString());
+			session.put('error_code', e.code);
+			session.put('error_message', e.sqlMessage);
+			console.error(e);
+			return response.status(400).send(session.get('error_beauti_message') + '. ' + session.get('error_message'));
 		}
 
-		let property = await TemplateProperty.find(id);
-		if(!property) {
-			session.put('error_beauti_message', "Template property not found");
-            console.error(session.get('error_beauti_message'));
-            return response.status(404).send( session.get('error_beauti_message'));
-		}
-
-		property.caption = caption;
-		await property
-			.save()
-			.catch( function(e) {
-                session.put('error', e.toString());
-                session.put('error_code', e.code);
-                session.put('error_message', e.sqlMessage);
-                session.put('error_beauti_message', "Failed to update template");
-                console.error(e);
-                return response.status(404).send( session.get('error_beauti_message') + '. ' + session.get('error_message') )
-			});
-			
-		return response.status(202).send('Template property successfully updated');
 	}
 
 	/**
@@ -166,34 +159,38 @@ class TemplatePropertyController {
 	 * @param {Request} ctx.request
 	 * @param {Response} ctx.response
 	 */
-	async destroy({ params, request, response }) {
-		const { id } = request.all();
+	async destroy({ params, request, session, response }) {
+		try {
+			const { id } = request.all();
 
-		if(!id ) {
-			session.put('error_beauti_message', "Parameters not founded");
-            console.error(session.get('error_beauti_message'));
-            return response.status(404).send( session.get('error_beauti_message'));
+			if (!id) {
+				session.put('error_beauti_message', "Parameters not founded");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
+
+			let property = await TemplateProperty.find(id);
+			if (!property) {
+				session.put('error_beauti_message', "Template Property not founded");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
+
+			await property
+				.delete()
+				.catch(function (e) {
+					session.put('error_beauti_message', "Failed to delete template property");
+					throw e;
+				});
+
+			return response.status(202).send('Template successfully deleted');
+		} catch (e) {
+			session.put('error', e.toString());
+			session.put('error_code', e.code);
+			session.put('error_message', e.sqlMessage);
+			console.error(e);
+			return response.status(400).send(session.get('error_beauti_message') + '. ' + session.get('error_message'));
 		}
-
-		let template = await Template.find(id);
-		if(!template) {
-			session.put('error_beauti_message', "Template not founded");
-            console.error(session.get('error_beauti_message'));
-            return response.status(404).send( session.get('error_beauti_message'));
-		}
-
-		await template
-			.delete()
-			.catch( function(e) {
-                session.put('error', e.toString());
-                session.put('error_code', e.code);
-                session.put('error_message', e.sqlMessage);
-                session.put('error_beauti_message', "Failed to delete template");
-                console.error(e);
-                return response.status(404).send( session.get('error_beauti_message') + '. ' + session.get('error_message') )
-			});
-			
-		return response.status(202).send('Template successfully deleted');
 
 	}
 }
