@@ -404,14 +404,16 @@ DROP TABLE IF EXISTS `product_properties`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `product_properties` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `product_id` int(11) NOT NULL,
   `caption` text,
   `value` text,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `product_id` (`product_id`),
   CONSTRAINT `product_properties_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -420,7 +422,7 @@ CREATE TABLE `product_properties` (
 
 LOCK TABLES `product_properties` WRITE;
 /*!40000 ALTER TABLE `product_properties` DISABLE KEYS */;
-INSERT INTO `product_properties` VALUES (23,'Color',NULL,'2019-08-09 00:46:38','2019-08-09 00:46:38'),(23,'Size',NULL,'2019-08-09 00:46:38','2019-08-09 00:46:38'),(23,'Smoothnes',NULL,'2019-08-09 00:46:38','2019-08-09 00:46:38'),(23,NULL,NULL,'2019-08-09 00:46:38','2019-08-09 00:46:38');
+INSERT INTO `product_properties` VALUES (1,23,'Color',NULL,'2019-08-09 00:46:38','2019-08-09 00:46:38'),(2,23,'Size',NULL,'2019-08-09 00:46:38','2019-08-09 00:46:38'),(3,23,'Smoothness','Lite','2019-08-09 00:46:38','2019-08-10 02:48:07'),(5,23,'Marked','true','2019-08-10 02:54:29','2019-08-10 02:54:29');
 /*!40000 ALTER TABLE `product_properties` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -443,7 +445,7 @@ CREATE TABLE `products` (
   PRIMARY KEY (`id`),
   KEY `products_ibfk_1` (`category_id`),
   CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -452,7 +454,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (1,1,'12345678912345','Some prod',32414.12,'blablabla',NULL,NULL),(2,1,'43324s234f23','Another prod',228.322,'Flexible product',NULL,NULL),(3,2,'32f42','Pen',21,'Just a pen to write a text',NULL,NULL),(4,2,'43l11','Pensil',14,'Pensil with hight quality',NULL,NULL),(23,2,'12s23','\"Pen 9\"',50.99,'\"New pen. Pen 9\"','2019-08-09 00:46:38','2019-08-09 01:13:52');
+INSERT INTO `products` VALUES (1,1,'12345678912345','Some prod',32414.12,'blablabla',NULL,NULL),(2,1,'43324s234f23','Another prod',228.322,'Flexible product',NULL,NULL),(3,2,'32f42','Pen',21,'Just a pen to write a text',NULL,NULL),(4,2,'43l11','Pensil',14,'Pensil with hight quality',NULL,NULL),(23,2,'12s23','Pen 9',50.99,'New pen. Pen 9','2019-08-09 00:46:38','2019-08-10 03:59:24');
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -650,4 +652,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-08-09  1:25:36
+-- Dump completed on 2019-08-10  4:03:01

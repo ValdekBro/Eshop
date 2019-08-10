@@ -19,7 +19,8 @@ const providers = [
   '@adonisjs/shield/providers/ShieldProvider',
   '@adonisjs/session/providers/SessionProvider',
   '@adonisjs/auth/providers/AuthProvider',
-  '@adonisjs/session/providers/SessionProvider'
+  '@adonisjs/session/providers/SessionProvider',
+  'adonis-bumblebee/providers/BumblebeeProvider'
 ]
 
 /*
@@ -32,7 +33,8 @@ const providers = [
 |
 */
 const aceProviders = [
-  '@adonisjs/lucid/providers/MigrationsProvider'
+  '@adonisjs/lucid/providers/MigrationsProvider',
+  'adonis-bumblebee/providers/CommandsProvider'
 ]
 
 /*
