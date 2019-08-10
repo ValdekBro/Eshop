@@ -1,0 +1,14 @@
+@layout('main')
+
+    @section('preloaded_scripts')
+        {{ csrfField() }}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    @endsection
+
+    @section('sidebar')
+    <h1> {{ product.name }} ({{ product.code }}) </h1>
+    @endsection
+
+    @section('content')
+        ...
+    @endsection 
