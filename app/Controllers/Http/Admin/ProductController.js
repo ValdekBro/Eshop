@@ -19,6 +19,16 @@ class ProductController {
 	}
 
 	async create({ request, response, view }) {
+		try {
+			return view.render('admin.product.form');
+		}
+		catch (e) {
+			session.put('error', e.toString());
+			session.put('error_code', e.code);
+			session.put('error_message', e.sqlMessage);
+			console.error(e);
+			return response.status(400).redirect('administration/products');
+		}
 	}
 
 	async store({ request, session, response, transform }) {
@@ -86,10 +96,101 @@ class ProductController {
 		}
 	}
 
-	async show({ params, request, response, view }) {
+	async copy({ params, request, session, response, transform }) {
+		try {
+
+			const id = params.id;
+			if (!id) {
+				session.put('error_beauti_message', "Parameter ID, not found");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
+
+			let product = await Product
+				.findOrFail(id)
+				.catch(function (e) {
+					session.put('error_beauti_message', "Product not found");
+					throw e;
+				});
+			product.id = undefined;
+			let new_product = new Product;
+			new_product.merge(product.toJSON());
+
+			await new_product
+				.save()
+				.catch(e => {
+					session.put('error_beauti_message', "Failed to save new product");
+					throw e;
+				});
+		
+			return response.status(202).redirect(`/administration/product/${new_product.id}/edit`);
+
+		}
+		catch (e) {
+			session.put('error', e.toString());
+			session.put('error_code', e.code);
+			session.put('error_message', e.sqlMessage);
+			console.error(e);
+			return response.status(400).send(session.get('error_beauti_message') + '. ' + session.get('error_message'));
+		}
+	}
+
+	async show({ params, request, session, response, view }) {
+		try {
+			const id = params.id;
+			if (!id) {
+				session.put('error_beauti_message', "Parameter ID, not found");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
+
+			const product = await Product
+				.query()
+				.where('id', id)
+				.with('properties')
+				.first()
+				.catch(e => {
+					session.put('error_beauti_message', "Failed to load product data");
+					throw e;
+				});
+			return view.render('admin.product.card', { product : product.toJSON() });
+		}
+		catch (e) {
+			session.put('error', e.toString());
+			session.put('error_code', e.code);
+			session.put('error_message', e.sqlMessage);
+			console.error(e);
+			return response.status(400).redirect('/administration/products');
+		}
 	}
 
 	async edit({ params, request, response, view }) {
+		try {
+			const id = params.id;
+			if (!id) {
+				session.put('error_beauti_message', "Parameter ID, not found");
+				console.error(session.get('error_beauti_message'));
+				return response.status(404).send(session.get('error_beauti_message'));
+			}
+
+			const product = await Product
+				.query()
+				.where('id', id)
+				.with('properties')
+				.first()
+				.catch(e => {
+					session.put('error_beauti_message', "Failed to load product data");
+					throw e;
+				});
+			return view.render('admin.product.form', { product : product.toJSON() });
+		}
+		catch (e) {
+			session.put('error', e.toString());
+			session.put('error_code', e.code);
+			session.put('error_message', e.sqlMessage);
+			console.error(e);
+			return response.status(400).redirect('/administration/products');
+		}
 	}
 
 	async update({ params, request, session, response }) {
@@ -126,7 +227,7 @@ class ProductController {
 					throw e;
 				});
 
-			return response.status(202).send('Template successfully updated');
+			return response.status(202).send('Product successfully updated');
 
 		} catch (e) {
 			session.put('error', e.toString());
