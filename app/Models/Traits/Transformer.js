@@ -1,6 +1,7 @@
 'use strict'
 
 const ProductProperty = use('App/Models/ProductProperty');
+const TempalteProperty = use('App/Models/TempalteProperty');
 
 class Transformer {
 	register(Model, customOptions = {}) {
@@ -17,6 +18,17 @@ class Transformer {
 			product_porperty.updated_at = null;
 			
 			return product_porperty;
+		}
+
+		Model.prototype.makeTemplateProperty = function () {
+			let template_property = new TempalteProperty;
+			
+			template_property.template_id = this.template_id || null;
+			template_property.caption = this.caption || null;
+			template_property.created_at = null;
+			template_property.updated_at = null;
+			
+			return template_property;
 		}
 
 	}
