@@ -41,7 +41,7 @@ Route.group(() => {
 
 	Route.get   ('/order/create', 'OrderController.edit'); 		// render('order.form');
 	Route.get   ('/order/:id', 'OrderController.show'); 		// render('order.card');
-	Route.get   ('/order/:id/copy', 'OrderController.copy'); 	// TODO : Добавить возможность редактировать продукты в заказе
+	Route.get   ('/order/:id/copy', 'OrderController.copy'); 
 	Route.post  ('/order/create', 'OrderController.store');
 }).middleware('auth');
 
