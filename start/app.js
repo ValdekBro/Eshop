@@ -20,7 +20,8 @@ const providers = [
   '@adonisjs/session/providers/SessionProvider',
   '@adonisjs/auth/providers/AuthProvider',
   '@adonisjs/session/providers/SessionProvider',
-  'adonis-bumblebee/providers/BumblebeeProvider'
+  'adonis-bumblebee/providers/BumblebeeProvider',
+  '@adonisjs/mail/providers/MailProvider'
 ]
 
 /*
