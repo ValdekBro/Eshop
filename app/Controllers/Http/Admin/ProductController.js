@@ -68,13 +68,16 @@ class ProductController {
 						throw e;
 					});
 				
-				let properties = await transform
-					.collection(template_properties.toJSON(), 'ProductPropertyTransformer')
-					.catch(function (e) {
-						session.put('error_beauti_message', "Failed to transform template properties");
-						throw e;
-					});	
-
+				// const properties = await transform
+				// 	.collection(template_properties.toJSON(), 'ProductPropertyTransformer')
+				// 	.catch(function (e) {
+				// 		session.put('error_beauti_message', "Failed to transform template properties");
+				// 		throw e;
+				// 	});	
+				let properties = template_properties.rows.map( property => {
+					return property.makeProductProperty();
+				})
+				
 				await product
 					.properties()
 					.saveMany(properties)

@@ -4,12 +4,17 @@
 const Model = use('Model')
 
 class TemplateProperty extends Model {
-    products () {
+    static boot() {
+        super.boot()
+        this.addTrait('Transformer')
+    }
+
+    products() {
         return this
             .belongsToMany('App/Models/Product')
             .pivotModel('App/Models/ProductTemplateProperty')
     }
-    template () {
+    template() {
         return this.belongsTo('App/Models/Template', 'template_id')
     }
 }
