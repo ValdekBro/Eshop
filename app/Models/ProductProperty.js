@@ -4,7 +4,12 @@
 const Model = use('Model')
 
 class ProductProperty extends Model {
-    product () {
+    static boot() {
+        super.boot()
+        this.addTrait('Transformer')
+    }
+    
+    product() {
         return this.belongsTo('App/Models/Product', 'product_id')
     }
 }

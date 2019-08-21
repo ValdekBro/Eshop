@@ -5,6 +5,7 @@
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
 const Template = use('App/Models/Template');
+const Product = use('App/Models/Product');
 
 /**
  * Resourceful controller for interacting with templates
@@ -76,15 +77,47 @@ class TemplateController {
 	 */
 	async store({ request, session, response }) {
 		try {
-			const { id } = request.all();
+			const { category_id, product_id } = request.all();
+
 			let template = new Template;
-			if (id) template.category_id = id;
+			if (category_id) template.category_id = category_id;
+
 			await template
 				.save()
 				.catch(e => {
 					session.put('error_beauti_message', "Failed to create template");
 					throw e;
 				});
+
+			if (product_id) {
+				const product = await Product
+					.findOrFail(product_id)
+					.catch(function (e) {
+						session.put('error_beauti_message', "Product not found");
+						throw e;
+					});
+
+				const product_properties = await product
+					.properties()
+					.fetch()
+					.catch(function (e) {
+						session.put('error_beauti_message', "Product properties not found");
+						throw e;
+					});
+
+				const template_properties = product_properties.rows.map(property => {
+					return property.makeTemplateProperty();
+				})
+				
+				await template
+					.templateProperties()
+					.saveMany(template_properties)
+					.catch(function (e) {
+						session.put('error_beauti_message', "Failed to save template properties");
+						throw e;
+					});
+
+			}
 
 			return response.status(202).send('Template successfully created');
 		} catch (e) {
@@ -149,7 +182,7 @@ class TemplateController {
 			template.name = name;
 			await template
 				.save()
-				.catch( e => {
+				.catch(e => {
 					session.put('error_beauti_message', "Failed to update template");
 					throw e;
 				});
@@ -192,7 +225,7 @@ class TemplateController {
 
 			await template
 				.delete()
-				.catch( e => {
+				.catch(e => {
 					session.put('error_beauti_message', "Failed to delete template");
 					throw e;
 				});

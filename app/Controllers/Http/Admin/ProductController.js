@@ -118,7 +118,7 @@ class ProductController {
 			product.id = undefined;
 			let new_product = new Product;
 			new_product.merge(product.toJSON());
-
+				
 			await new_product
 				.save()
 				.catch(e => {

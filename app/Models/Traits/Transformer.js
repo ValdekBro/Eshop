@@ -1,14 +1,14 @@
 'use strict'
 
-const ProductProperty = use('App/Models/ProductProperty');
-const TempalteProperty = use('App/Models/TempalteProperty');
 
 class Transformer {
 	register(Model, customOptions = {}) {
 		const defaultOptions = {}
 		const options = Object.assign(defaultOptions, customOptions)
-
+		
 		Model.prototype.makeProductProperty = function () {
+			const ProductProperty = use('App/Models/ProductProperty');
+			
 			let product_porperty = new ProductProperty;
 			
 			product_porperty.product_id = this.product_id || null;
@@ -21,7 +21,9 @@ class Transformer {
 		}
 
 		Model.prototype.makeTemplateProperty = function () {
-			let template_property = new TempalteProperty;
+			const TemplateProperty = use('App/Models/TemplateProperty');
+
+			let template_property = new TemplateProperty;
 			
 			template_property.template_id = this.template_id || null;
 			template_property.caption = this.caption || null;
